@@ -51,11 +51,11 @@ if __name__ == '__main__':
                         col_num, row_num = translate_hit_area(mouse_x, mouse_y)
                         chessman_sprite = select_chessman_from_list(newgame.piece_list, col_num, row_num)
                         if current_chessman is None and chessman_sprite != None:
-                            if chessman_sprite.name.islower() != newgame.turn%2==1:
+                            if chessman_sprite.name.islower() != (newgame.turn%2==1):
                                 current_chessman = chessman_sprite
                                 chessman_sprite.is_selected = True
                         elif current_chessman != None and chessman_sprite != None:
-                            if chessman_sprite.name.islower() != newgame.turn%2==1:
+                            if chessman_sprite.name.islower() != (newgame.turn%2==1):
                                 current_chessman.is_selected = False
                                 current_chessman = chessman_sprite
                                 chessman_sprite.is_selected = True
@@ -63,12 +63,14 @@ if __name__ == '__main__':
                                 #success = current_chessman.valid_move(board_matrix[row_num+1][col_num+1])
                                 success = newgame.update_move(current_chessman.id, board_matrix[row_num+1][col_num+1])
                                 if success:
+                                    newgame.turn_mananger()
                                     current_chessman.is_selected = False
                                     current_chessman = None
                         elif current_chessman != None and chessman_sprite is None:
                             #success = current_chessman.valid_move(board_matrix[row_num+1][col_num+1])
                             success =  newgame.update_move(current_chessman.id, board_matrix[row_num+1][col_num+1])
                             if success:
+                                newgame.turn_mananger()
                                 current_chessman.is_selected = False
                                 current_chessman = None
 

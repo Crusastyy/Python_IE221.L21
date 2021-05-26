@@ -264,14 +264,9 @@ class GameState(object):
 
         return is_updated
 
-    def turn_mananger(self, move={'piece_id': '', 'next_pos': INVALID_POS}):
-        if self.update_move(piece_id=move['piece_id'], next_pos=move['next_pos']):
-            self.__update_history() 
-            if move['piece_id'][0].islower(): 
-                self.next_move = 'w'
-            else: 
-                self.next_move = 'b'
-                self.turn += 1 
+    def turn_mananger(self):
+        self.__update_history() 
+        self.turn += 1 
 
 if __name__ == "__main__": 
   
