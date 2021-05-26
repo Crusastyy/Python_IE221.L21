@@ -11,7 +11,7 @@ def translate_hit_area(screen_x, screen_y):
 
 def select_chessman_from_list(piece_list, col, row):
     for piece in piece_list:
-        if piece.row == row and piece.col == col:
+        if piece.position == board_matrix[row + 1][col + 1]:
             return piece
 
 class Graphiccc():
@@ -60,15 +60,15 @@ if __name__ == '__main__':
                                 current_chessman = chessman_sprite
                                 chessman_sprite.is_selected = True
                             else:
-                                success = current_chessman.valid_move(board_matrix[row_num+1][col_num+1])
+                                #success = current_chessman.valid_move(board_matrix[row_num+1][col_num+1])
+                                success = newgame.update_move(current_chessman.id, board_matrix[row_num+1][col_num+1])
                                 if success:
-                                    newgame.update_move(current_chessman.id, board_matrix[row_num+1][col_num+1])
                                     current_chessman.is_selected = False
                                     current_chessman = None
                         elif current_chessman != None and chessman_sprite is None:
-                            success = current_chessman.valid_move(board_matrix[row_num+1][col_num+1])
+                            #success = current_chessman.valid_move(board_matrix[row_num+1][col_num+1])
+                            success =  newgame.update_move(current_chessman.id, board_matrix[row_num+1][col_num+1])
                             if success:
-                                newgame.update_move(current_chessman.id, board_matrix[row_num+1][col_num+1])
                                 current_chessman.is_selected = False
                                 current_chessman = None
 

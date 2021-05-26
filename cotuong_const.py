@@ -34,11 +34,11 @@ BLOCKING_TYPES = {
 }
 BLOCKING_RULES = {
     DESTINATION: lambda curr_pos, target_pos: [target_pos], 
-    VERTICAL: lambda curr_pos, target_pos: list(range(curr_pos, target_pos+1, 10)) if target_pos > curr_pos else list(range(target_pos, curr_pos+1, 10)),
-    HORIZONTAL: lambda curr_pos, target_pos: list(range(curr_pos, target_pos+1)) if target_pos > curr_pos else list(range(target_pos, curr_pos+1)),
-    DIAGONAL_LEFT_DESC: lambda curr_pos, target_pos: list(range(curr_pos, target_pos, 11)) if target_pos > curr_pos else list(range(target_pos, curr_pos, 11)),
-    DIAGONAL_LEFT_ASCE: lambda curr_pos, target_pos: list(range(curr_pos, target_pos, 9)) if target_pos > curr_pos else list(range(target_pos, curr_pos, 9)),
-    LSHAPE: lambda curr_pos, target_pos: [curr_pos + 1] if target_pos%10 - 2 == curr_pos%10 else ([curr_pos -1] if target_pos%10 + 2 == curr_pos%10 else([curr_pos -10] if target_pos//10 - 2 == curr_pos//10 else [curr_pos + 10]))
+    VERTICAL: lambda curr_pos, target_pos: list(range(curr_pos + 10, target_pos - 1, 10)) if target_pos > curr_pos else list(range(target_pos + 10, curr_pos - 1, 10)),
+    HORIZONTAL: lambda curr_pos, target_pos: list(range(curr_pos + 1, target_pos)) if ((target_pos > curr_pos) and (target_pos-curr_pos < 9)) else (list(range(target_pos + 1, curr_pos)) if ((target_pos < curr_pos) and (-target_pos+curr_pos < 9)) else list(range(1,0))),
+    DIAGONAL_LEFT_DESC: lambda curr_pos, target_pos: [curr_pos - 11] if curr_pos - 22 == target_pos else ([curr_pos - 9] if curr_pos - 18 == target_pos else ([curr_pos + 11] if target_pos - curr_pos == 22 else [curr_pos + 9])),
+    DIAGONAL_LEFT_ASCE: lambda curr_pos, target_pos: [],
+    LSHAPE: lambda curr_pos, target_pos: [curr_pos + 10] if target_pos - curr_pos >= 19 else ([curr_pos - 10] if curr_pos - target_pos >= 19 else ([curr_pos - 1] if ((curr_pos - 12 == target_pos) or (curr_pos + 8 == target_pos)) else ([curr_pos + 1] if ((curr_pos - 8 == target_pos) or (curr_pos + 12 == target_pos)) else [])))
 }
 
 INVALID_POS = -1110
@@ -111,15 +111,15 @@ MOVE_HORIZONTALLY_ONE_UNIT_RIGHT = {w: 1, b: -1}
 
 board_coor = {
     11: [40, 40],	12: [120, 38],      13: [200, 38],      14: [280, 38],	    15: [360, 38],      16: [440, 38],      17: [520, 38],	    18: [600, 38],      19: [680, 38],
-    21: [40, 118],  22: [120, 118],	    23: [200, 118],	    24: [280, 118],	    25: [360, 118],	    26: [440, 118],	    27: [520, 118],	    28: [600, 118],	    29: [680, 118],
-    31: [40, 198],  32: [120, 198],	    33: [200, 198],	    34: [280, 198],	    35: [360, 198],	    36: [440, 198],	    37: [520, 198],	    38: [600, 198],	    39: [680, 198],
-    41: [40, 278],	42: [120, 278],	    43: [200, 278],	    44: [280, 278],	    45: [360, 278],	    46: [440, 278],	    47: [520, 278],	    48: [600, 278],	    49: [680, 278],
-    51: [40, 358],	52: [120, 358],	    53: [200, 358],	    54: [280, 358],	    55: [360, 358],	    56: [440, 358],	    57: [520, 358],	    58: [600, 358],	    59: [680, 358],
-    61: [40, 439],	62: [120, 439],	    63: [200, 439],	    64: [280, 439],	    65: [360, 439],	    66: [440, 439],	    67: [520, 439],	    68: [600, 439],	    69: [680, 439],
-    71: [40, 519],	72: [120, 519],	    73: [200, 519],	    74: [280, 519],	    75: [360, 519],	    76: [440, 519],	    77: [520, 519],	    78: [600, 519],	    79: [680, 519],
-    81: [40, 599],	82: [120, 599],	    83: [200, 599],	    84: [280, 599],	    85: [360, 599],	    86: [440, 599],	    87: [520, 599],	    88: [600, 599],	    89: [680, 599],
-    91: [40, 679],	92: [120, 679],	    93: [200, 679],	    94: [280, 679],	    95: [360, 679],	    96: [440, 679],	    97: [520, 679],	    98: [600, 679],	    99: [680, 679],
-    101: [40, 759],	102: [120, 759],	103: [200, 759],	104: [280, 759],	105: [360, 759],	106: [440, 759],	107: [520, 759],	108: [600, 759],	109: [680, 759]
+    21: [40, 120],  22: [120, 118],	    23: [200, 118],	    24: [280, 118],	    25: [360, 118],	    26: [440, 118],	    27: [520, 118],	    28: [600, 118],	    29: [680, 118],
+    31: [40, 200],  32: [120, 198],	    33: [200, 198],	    34: [280, 198],	    35: [360, 198],	    36: [440, 198],	    37: [520, 198],	    38: [600, 198],	    39: [680, 198],
+    41: [40, 280],	42: [120, 278],	    43: [200, 278],	    44: [280, 278],	    45: [360, 278],	    46: [440, 278],	    47: [520, 278],	    48: [600, 278],	    49: [680, 278],
+    51: [40, 360],	52: [120, 358],	    53: [200, 358],	    54: [280, 358],	    55: [360, 358],	    56: [440, 358],	    57: [520, 358],	    58: [600, 358],	    59: [680, 358],
+    61: [40, 440],	62: [120, 439],	    63: [200, 439],	    64: [280, 439],	    65: [360, 439],	    66: [440, 439],	    67: [520, 439],	    68: [600, 439],	    69: [680, 439],
+    71: [40, 520],	72: [120, 519],	    73: [200, 519],	    74: [280, 519],	    75: [360, 519],	    76: [440, 519],	    77: [520, 519],	    78: [600, 519],	    79: [680, 519],
+    81: [40, 600],	82: [120, 599],	    83: [200, 599],	    84: [280, 599],	    85: [360, 599],	    86: [440, 599],	    87: [520, 599],	    88: [600, 599],	    89: [680, 599],
+    91: [40, 680],	92: [120, 679],	    93: [200, 679],	    94: [280, 679],	    95: [360, 679],	    96: [440, 679],	    97: [520, 679],	    98: [600, 679],	    99: [680, 679],
+    101: [40, 760],	102: [120, 759],	103: [200, 759],	104: [280, 759],	105: [360, 759],	106: [440, 759],	107: [520, 759],	108: [600, 759],	109: [680, 759]
 }
 
 location_chess= [

@@ -1,3 +1,4 @@
+from pygame.constants import NOEVENT
 from cotuong_const import board_matrix, start_coords_2, INVALID_POS, board_coor, location_chess
 from copy import deepcopy
 from verify import Advisor, Cannon, Elephant, King, Horse, Pawn, Rock
@@ -35,6 +36,111 @@ class GameState(object):
         self.__load_game(load)
         self.history = []
 
+    def get_left_first_piece(self, position):
+        for i in range(position - 1, position - (position%10), - 1):
+            current = None
+            for piece in self.piece_list:
+                if piece.position == i:
+                    current = piece
+            if current != None:
+                return current
+
+
+    def get_right_first_piece(self, position):
+        for i in range(position + 1, position + 10 - (position%10), + 1):
+            current = None
+            for piece in self.piece_list:
+                if piece.position == i:
+                    current = piece
+            if current != None:
+                return current
+
+
+    def get_top_first_piece(self, position):
+        for i in range(position - 10, 10, - 10):
+            current = None
+            for piece in self.piece_list:
+                if piece.position == i:
+                    current = piece
+            if current != None:
+                return current
+
+
+    def get_bottom_first_piece(self, position):
+        for i in range(position + 10, 110, + 10):
+            current = None
+            for piece in self.piece_list:
+                if piece.position == i:
+                    current = piece
+            if current != None:
+                return current
+
+    def get_left_second_piece(self, position):
+        count = 0
+        for i in range(position - 1, position - (position%10), - 1):
+            current = None
+            for piece in self.piece_list:
+                if piece.position == i:
+                    current = piece
+            if current != None:
+                if count == 1:
+                    return current
+                else: 
+                    count += 1
+
+
+    def get_right_second_piece(self, position):
+        count = 0
+        for i in range(position - 1, position + 10 - (position%10), + 1):
+            current = None
+            for piece in self.piece_list:
+                if piece.position == i:
+                    current = piece
+            if current != None:
+                if count == 1:
+                    return current
+                else: 
+                    count += 1
+
+    def get_top_second_piece(self, position):
+        count = 0
+        for i in range(position - 10, 10 , - 10):
+            current = None
+            for piece in self.piece_list:
+                if piece.position == i:
+                    current = piece
+            if current != None:
+                if count == 1:
+                    return current
+                else: 
+                    count += 1
+    
+    def get_bottom_second_piece(self, position):
+        count = 0
+        for i in range(position + 10, 110, + 10):
+            current = None
+            for piece in self.piece_list:
+                if piece.position == i:
+                    current = piece
+            if current != None:
+                if count == 1:
+                    return current
+                else: 
+                    count += 1
+
+    def calc_moving_list(self, piece):
+        position = piece.position
+        left = self.get_left_first_chessman(position)
+        right = self.get_right_first_chessman(position)
+        top = self.get_top_first_chessman(position)
+        bottom = self.get_bottom_first_chessman(position)
+
+        piece.calc_moving_path(left, (left.position if left != None else None),piece.position, 1, 0, True)
+        piece.calc_moving_path(right, (right.position if right != None else None),piece.position, -1, 8, True)
+        piece.calc_moving_path(top, (top.position if top != None else None),piece.postion, -1, 9, False)
+        self.calc_moving_path(bottom, (bottom.position if bottom != None else None),piece.position, 1, 0, False)
+
+
     def __generate_piece_list_from_position_list(self, piece_name):
         return [notation_to_object[piece_name.lower()](name=piece_name, pos_id=id) for id in range(len(self.__start_coords[piece_name]))]
 
@@ -53,6 +159,17 @@ class GameState(object):
             self.location[(piece.position // 10) - 1][(piece.position % 10) - 1] = 1
         return 'New game has been set.'
 
+    def calc_pos_list(self, piece):
+        pos = []
+        name = piece.name.lower()
+        if name == 'a':
+            pass
+        elif name == 'c':
+            pass
+        elif name == 'e':
+            pass
+        return pos
+
     def is_occupied(self,piece, next_pos): 
         blocked_destination = False 
         blocked_enroute     = False 
@@ -64,12 +181,30 @@ class GameState(object):
             blocked_destination = True 
             opposite_side_destination = not ((piece.name.isupper() and another_piece.name.isupper()) and (piece.name.islower() and another_piece.name.islower()))
         pos_list.remove(next_pos)
-
-        for pos in pos_list: 
-            another_piece = self.get_piece_with_position(pos)
-            if  another_piece is not None:
-                blocked_enroute = True 
-                break 
+        
+        if piece.name.lower() != 'c':
+            for pos in pos_list: 
+                another_piece = self.get_piece_with_position(pos)
+                if  another_piece is not None:
+                    blocked_enroute = True 
+                    break 
+        else:
+            count_c = 0
+            for pos in pos_list: 
+                enroute_piece = self.get_piece_with_position(pos)
+                if enroute_piece is not None:
+                    count_c += 1
+                    if(count_c == 1):
+                        blocked_enroute = False 
+                        if another_piece is None:
+                            blocked_enroute = True 
+                            break
+                    elif count_c > 1:
+                        blocked_enroute = True
+                        break
+            if count_c == 0:
+                opposite_side_destination = False 
+            
 
         return blocked_destination, blocked_enroute, opposite_side_destination
 
@@ -116,8 +251,7 @@ class GameState(object):
                 is_destination_blocked, is_enroute_blocked, is_edible = self.is_occupied(piece=piece, next_pos=next_pos)
                 if not is_enroute_blocked:
                     if is_destination_blocked and is_edible:
-                        eatee_piece = self.get_piece_with_position(next_pos)
-                        eatee_piece.position = -eatee_piece.position
+                        self.piece_list.remove(self.get_piece_with_position(next_pos))
                         piece.position = next_pos 
                         piece.coor = board_coor[piece.position]
                         is_updated = True
