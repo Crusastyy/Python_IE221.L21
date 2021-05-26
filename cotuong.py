@@ -1,5 +1,5 @@
 from pygame.constants import NOEVENT
-from cotuong_const import board_matrix, start_coords_2, INVALID_POS, board_coor, location_chess
+from cotuong_const import BLOCKING_RULES, board_matrix, start_coords_2, INVALID_POS, board_coor, location_chess
 from copy import deepcopy
 from verify import Advisor, Cannon, Elephant, King, Horse, Pawn, Rock
 
@@ -247,6 +247,7 @@ class GameState(object):
         is_updated = False 
         try: 
             piece = self.get_piece_with_id(piece_id)        
+
             if piece.valid_move(next_pos):
                 is_destination_blocked, is_enroute_blocked, is_edible = self.is_occupied(piece=piece, next_pos=next_pos)
                 if not is_enroute_blocked:
@@ -258,7 +259,44 @@ class GameState(object):
                     elif not is_destination_blocked:
                         piece.position = next_pos 
                         piece.coor = board_coor[piece.position]
-                        is_updated = True                     
+                        is_updated = True         
+            elif piece.name.lower() == 'k':
+                another_piece = self.get_piece_with_position(next_pos)
+                if another_piece != None:
+                    if piece.name != another_piece and piece.name.lower() == another_piece.name.lower():
+                        is_destination_blocked = False 
+                        is_enroute_blocked     = False 
+                        is_edible = False
+                        
+                        if (abs(next_pos - piece.position) % 10 == 0):
+
+                            pos_list =  list(range(piece.position + 10, next_pos - 1, 10)) if next_pos > piece.position else list(range(next_pos + 10, piece.position - 1, 10)),
+
+                        
+                        if another_piece is not None: 
+                            is_destination_blocked = True 
+                            is_edible = not ((piece.name.isupper() and another_piece.name.isupper()) and (piece.name.islower() and another_piece.name.islower()))
+                        
+                        
+                       
+                        for pos in pos_list: 
+                            another_piece = self.get_piece_with_position(pos)
+                            if  another_piece is not None:
+                                is_enroute_blocked = True 
+                                break 
+                          
+
+                        
+                        if not is_enroute_blocked:
+                            if is_destination_blocked and is_edible:
+                                self.piece_list.remove(self.get_piece_with_position(next_pos))
+                                piece.position = next_pos 
+                                piece.coor = board_coor[piece.position]
+                                is_updated = True
+                            elif not is_destination_blocked:
+                                piece.position = next_pos 
+                                piece.coor = board_coor[piece.position]
+                                is_updated = True                      
         except AttributeError: 
             print('No piece with this id')
 
@@ -267,6 +305,7 @@ class GameState(object):
     def turn_mananger(self):
         self.__update_history() 
         self.turn += 1 
+
 
 if __name__ == "__main__": 
   

@@ -21,6 +21,9 @@ class Piece(object):
         self.is_selected = False
         self.moving_list = []
         self.is_alive = True
+        self.trans_img = pygame.image.load("Img/transparent.gif")
+        self.is_transparent = False
+        self.tam = ''
     
     def is_inboard(self, next_pos=INVALID_POS):
         if next_pos != INVALID_POS and 109 >= next_pos >= 11 and next_pos % 10 != 0:
@@ -183,7 +186,7 @@ class King(Piece):
         self.row = (self.position // 10) - 1
 
     def valid_move(self, next_pos=INVALID_POS):
-        if self.position != next_pos and next_pos in self.pos_limit and self.position in self.pos_limit and (self.position + 1 == next_pos or self.position - 1 == next_pos or self.position + 10 == next_pos or self.position - 10 == next_pos):
+        if (self.position != next_pos and next_pos in self.pos_limit and self.position in self.pos_limit and (self.position + 1 == next_pos or self.position - 1 == next_pos or self.position + 10 == next_pos or self.position - 10 == next_pos)):
             return True
         else:
             return False
