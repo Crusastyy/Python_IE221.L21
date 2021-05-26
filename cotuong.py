@@ -2,6 +2,7 @@ from pygame.constants import NOEVENT
 from cotuong_const import BLOCKING_RULES, board_matrix, start_coords_2, INVALID_POS, board_coor, location_chess
 from copy import deepcopy
 from verify import Advisor, Cannon, Elephant, King, Horse, Pawn, Rock
+import random
 
 BOARD_MATRIX = deepcopy(board_matrix)
 STARTCOORDS = deepcopy(start_coords_2)
@@ -35,6 +36,29 @@ class GameState(object):
         self.piece_list = []
         self.__load_game(load)
         self.history = []
+        self.AI = False
+
+
+    def generateAIMove(self):
+        victor_message = ''
+        while True:
+            randpiece = random.choice(self.piece_list)
+            #randpiece = self.get_piece_with_position(15)
+            if not randpiece.name.islower():
+                pass
+            else:
+                while True:
+                    des = random.choice(random.choice(board_matrix))
+                    #des = 14
+                    anotherpiece = self.get_piece_with_position(des)
+                    if(randpiece.valid_move(des)):
+                        if self.update_move(randpiece.id, des):
+                            if anotherpiece != None:
+                                if anotherpiece.name == 'K':
+                                    victor_message = "AI win"
+                               
+                            self.turn_mananger()
+                            return victor_message
 
     def get_left_first_piece(self, position):
         for i in range(position - 1, position - (position%10), - 1):
@@ -179,7 +203,7 @@ class GameState(object):
         another_piece = self.get_piece_with_position(next_pos)
         if another_piece is not None: 
             blocked_destination = True 
-            opposite_side_destination = not ((piece.name.isupper() and another_piece.name.isupper()) and (piece.name.islower() and another_piece.name.islower()))
+            opposite_side_destination = not ((piece.name.isupper() and another_piece.name.isupper()) or (piece.name.islower() and another_piece.name.islower()))
         pos_list.remove(next_pos)
         
         if piece.name.lower() != 'c':
@@ -268,7 +292,7 @@ class GameState(object):
                         is_enroute_blocked     = False 
                         is_edible = False
                         
-                        if (abs(next_pos - piece.position) % 10 == 0):
+                        if (abs(next_pos - piece.position) % 10 == 0) and (abs(next_pos - piece.position) > 20):
 
                             pos_list =  list(range(piece.position + 10, next_pos - 1, 10)) if next_pos > piece.position else list(range(next_pos + 10, piece.position - 1, 10)),
 
@@ -311,9 +335,6 @@ if __name__ == "__main__":
   
     from pprint import PrettyPrinter as pp 
     newgame = GameState() 
-    pp().pprint(Pawn('P', 2).valid_move(65))
-    pp().pprint(newgame.is_occupied(newgame.get_piece_with_id('P2'), 65))
-    pp().pprint(newgame.update_move('P2', 65))
-    pp().pprint(newgame.piece_list)
+    
     for piece in newgame.piece_list:
-        pp().pprint(str(piece.row)+"-"+str(piece.col))
+        print(piece)
